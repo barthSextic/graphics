@@ -15,7 +15,7 @@ class Color(Enum):
 
 class _pngEncoder(ABC):
 
-    def __init__(self, filename: str, data: list, depth: int = 8, color_type: Enum = Color.GRAYSCALE):
+    def __init__(self, filename: str, data: list, depth: int = 8, color_type: Enum = Color.GRAYSCALE, compression: bool = False):
     
             # Data Validation
             # TODO: Add more data validation that doesn't increase time complexity too much
@@ -34,7 +34,11 @@ class _pngEncoder(ABC):
             self.data = data
             self.width = len(data[0])
             self.height = len(data)
-            self.file = open(filename, 'wb')
+
+            if compression:
+                self.compression = zlib.Z_BEST_COMPRESSION
+            else:
+                self.compression = zlib.Z_NO_COMPRESSION
 
     def __del__(self):
         self.file.close()
@@ -76,6 +80,7 @@ class _pngEncoder(ABC):
     def make(self):
         print(f'Making {self.filename}...')
         start_time = time.time()
+        self.file = open(self.filename, 'wb')
         self._signature()
         self._header()
         self._imdata()
@@ -103,8 +108,8 @@ class Grayscale(_pngEncoder):
         Note the default depth is 8, so the highest value we can utilize is 2^8 - 1.
     """
 
-    def __init__(self, filename: str, data: list, depth: int = 8):
-        super().__init__(filename, data, depth = depth, color_type = Color.GRAYSCALE)
+    def __init__(self, filename: str, data: list, depth: int = 8, compression: bool = False):
+        super().__init__(filename, data, depth = depth, color_type = Color.GRAYSCALE, compression = compression)
 
     def _imdata(self):
         if self.depth == 8:
@@ -116,7 +121,7 @@ class Grayscale(_pngEncoder):
         for row in self.data:
                 data += b'\x00' + b''.join([x.to_bytes(byte_size, 'big') for x in row])
         
-        self._write_chunk('IDAT', zlib.compress(data, level = zlib.Z_NO_COMPRESSION, wbits = zlib.MAX_WBITS))
+        self._write_chunk('IDAT', zlib.compress(data, level = self.compression, wbits = zlib.MAX_WBITS))
 
 class RGB(_pngEncoder):
     """
@@ -135,8 +140,8 @@ class RGB(_pngEncoder):
         Will output a 2 x 3 RGB image with the pixel values given.
     """
 
-    def __init__(self, filename: str, data: list, depth: int = 8):
-        super().__init__(filename, data, depth = depth, color_type = Color.RGB)
+    def __init__(self, filename: str, data: list, depth: int = 8, compression: bool = False):
+        super().__init__(filename, data, depth = depth, color_type = Color.RGB, compression = compression)
 
     def _imdata(self):
         if self.depth == 8:
@@ -152,7 +157,7 @@ class RGB(_pngEncoder):
                 row_data += r.to_bytes(byte_size, 'big') + g.to_bytes(byte_size, 'big') + b.to_bytes(byte_size, 'big')
             data += row_data
 
-        self._write_chunk('IDAT', zlib.compress(data, level = zlib.Z_NO_COMPRESSION, wbits = zlib.MAX_WBITS))
+        self._write_chunk('IDAT', zlib.compress(data, level = self.compression, wbits = zlib.MAX_WBITS))
 
 
 def test_gray(depth: int = 8):
