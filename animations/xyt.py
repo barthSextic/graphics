@@ -7,14 +7,14 @@ import sys
 
 FILENAME = "animations/elliptic.mp4"
 
-FPS = 24.0
-DT = 0.01
+FPS = 60.0
+DT = 0.0064
 
-X_MIN = -3
-X_MAX = 3
-Y_MIN = -2
-Y_MAX = 2
-RESOLUTION = 512
+X_MIN = -2
+X_MAX = 2
+Y_MIN = -1
+Y_MAX = 1
+RESOLUTION = 256
 
 NBHD = 0.064
 CENTER = 0
@@ -27,7 +27,7 @@ def f(x, y, t: float) -> bool:
     t: [0, 1]
     '''
     # t = (t * 8) - 4
-    t = 4 * math.cos(2 * math.pi * t)
+    t = math.cos(2 * math.pi * t)
     value = x**3 + t * x - y ** 2
     value = abs(value - CENTER)
 
