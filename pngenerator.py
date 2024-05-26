@@ -4,10 +4,28 @@
 # Author: Rick Howell
 # rick.howell.arts@gmail.com
 
+import math
 import time
 import zlib
 from abc import abstractmethod, ABC
 from enum import Enum
+
+def angle2rgb(angle: float, bit_depth: int = 255) -> tuple:
+    """Angle should be in radians from -pi to pi. \n
+    Note: for vectors in R2, math.atan2(y, x) will give the angle."""
+
+    if angle < -math.pi:
+        angle = -math.pi
+    elif angle > math.pi:
+        angle = math.pi
+
+    x = (angle + math.pi) / (2 * math.pi)
+
+    r = int(bit_depth * ((1.0 + math.cos(2 * math.pi * x)) / 2.0))
+    g = int(bit_depth * ((1.0 + math.cos(2 * math.pi * (x - 1/3))) / 2.0))
+    b = int(bit_depth * ((1.0 + math.cos(2 * math.pi * (x - 2/3))) / 2.0))
+
+    return (r, g, b)
 
 class Color(Enum):
     GRAYSCALE = 0

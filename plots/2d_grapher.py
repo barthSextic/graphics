@@ -2,18 +2,18 @@ import math
 import time
 import pngenerator as png
 
-FILENAME = "plots/elliptic.png"
-X_MIN = -2
-X_MAX = 2
-Y_MIN = -2
-Y_MAX = 2
-RESOLUTION = 1024
+FILENAME = "plots/tanx.png"
+X_MIN = -7
+X_MAX = 7
+Y_MIN = -7
+Y_MAX = 7
+RESOLUTION = 512
 
-NBHD = 0.064
+NBHD = 0.1
 CENTER = 0
 
 def f(x, y):
-    return y**2 - x**3 + x
+    return math.tan(x) - y
 
 def threshold_plot(plot, min, max):
     for row in plot:
@@ -122,8 +122,9 @@ def main():
         plot.append(row)
 
     plot = threshold_plot(plot, CENTER - NBHD, CENTER + NBHD)
-    plot = average_blur(plot, 1)
-    plot = gaussian_blur(plot, 1)
+    
+    # plot = average_blur(plot, 1)
+    # plot = gaussian_blur(plot, 1)
 
     # plot = add_gridlines(plot)
 
