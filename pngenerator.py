@@ -1,3 +1,8 @@
+#####################################################################
+# NOTE: THIS IS OLD CODE. THE UPDATED pngenerator.py IS IN ricklib  #
+# YOU CAN IMPORT IT WITH PIP: pip install ricklib                   #
+#####################################################################
+
 # PNG Encoder using only the Python Standard Library
 # Designed to be simple and easy to use
 

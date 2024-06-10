@@ -1,3 +1,8 @@
+#####################################################################
+# NOTE: THIS IS OLD CODE. THE UPDATED mp4generator.py IS IN ricklib #
+# YOU CAN IMPORT IT WITH PIP: pip install ricklib                   #
+#####################################################################
+
 # Simple MP4 encoder for transforming a list of lists of lists of tuples into an MP4 video.
 
 # Example input for an mp4 with n frames and 2 x 2 pixels per frame:
