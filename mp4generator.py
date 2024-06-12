@@ -1,8 +1,3 @@
-#####################################################################
-# NOTE: THIS IS OLD CODE. THE UPDATED mp4generator.py IS IN ricklib #
-# YOU CAN IMPORT IT WITH PIP: pip install ricklib                   #
-#####################################################################
-
 # Simple MP4 encoder for transforming a list of lists of lists of tuples into an MP4 video.
 
 # Example input for an mp4 with n frames and 2 x 2 pixels per frame:
@@ -48,7 +43,9 @@ class mp4:
         frames = np.array(self.data, ndmin=3)
         print(frames.shape)
 
-        fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+        # The X264 codec allows for the mp4 to be played in VS Code.
+        # Also, it will throw errors. Ignore them.
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out = cv2.VideoWriter(self.filename, fourcc, self.fps, (self.width, self.height))
         
         print(f'File opened: {out.isOpened()}')
@@ -63,12 +60,54 @@ class mp4:
         out.release()
         cv2.destroyAllWindows()
 
+
+
+def scale_up(frames: list, factor: int) -> list:
+    '''Scales up the size of frames by an integer factor
+    The number of frames remains the same'''
+
+    scaled_frames = []
+    for frame in frames:
+        scaled_frame = []
+        for row in frame:
+            scaled_row = []
+            for pixel in row:
+                for _ in range(factor):
+                    scaled_row.append(pixel)
+            for _ in range(factor):
+                scaled_frame.append(scaled_row)
+        scaled_frames.append(scaled_frame)
+
+    return scaled_frames
+
+
+def binary2rgb(data: list) -> list:
+    '''Converts a list of lists of lists of 0s and 1s into a list of lists of lists of RGB tuples'''
+
+    rgb_data = []
+    for frame in data:
+        rgb_frame = []
+        for row in frame:
+            rgb_row = []
+            for pixel in row:
+                if pixel == 0:
+                    rgb_row.append((0, 0, 0))
+                else:
+                    rgb_row.append((255, 255, 255))
+            rgb_frame.append(rgb_row)
+        rgb_data.append(rgb_frame)
+
+    return rgb_data
+
+
 def test_rgb():
+    print('Testing RGB')
+
     import math
 
     w = 512
     h = 256
-    frames = 1000
+    frames = 100
     data = []
 
     for f in range(frames):
@@ -92,6 +131,11 @@ def test_rgb():
                 row.append((c[0], c[1], c[2]))
             frame.append(row)
         data.append(frame)
+        print(f'Frame {f}')
 
     f = mp4('test.mp4', data, fps = 60.0)
     f.make()
+
+
+if __name__ == '__main__':
+    test_rgb()
