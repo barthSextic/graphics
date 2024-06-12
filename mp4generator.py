@@ -30,37 +30,6 @@ data =  [
 import cv2
 import numpy as np
 
-class mp4:
-
-    def __init__(self, filename: str, data: list, fps: float = 24.0):
-        self.filename = filename
-        self.fps = fps
-        self.data = data
-        self.height = len(data[0])
-        self.width = len(data[0][0])
-
-    def make(self):
-        frames = np.array(self.data, ndmin=3)
-        print(frames.shape)
-
-        # The X264 codec allows for the mp4 to be played in VS Code.
-        # Also, it will throw errors. Ignore them.
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(self.filename, fourcc, self.fps, (self.width, self.height))
-        
-        print(f'File opened: {out.isOpened()}')
-
-        for frame in frames:
-            # We'll convert the np array to hex BGR format
-            # \0xBBGGRR
-            frame = np.array(frame).astype(np.uint8)
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            out.write(frame)
-
-        out.release()
-        cv2.destroyAllWindows()
-
-
 
 def scale_up(frames: list, factor: int) -> list:
     '''Scales up the size of frames by an integer factor
@@ -98,6 +67,45 @@ def binary2rgb(data: list) -> list:
         rgb_data.append(rgb_frame)
 
     return rgb_data
+
+
+class mp4:
+
+    def __init__(self, filename: str, data: list, fps: float = 24.0):
+        self.filename = filename
+        self.fps = fps
+        self.data = data
+        self.height = len(data[0])
+        self.width = len(data[0][0])
+
+    def make(self):
+        frames = np.array(self.data, ndmin=3)
+        print(frames.shape)
+
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(self.filename, fourcc, self.fps, (self.width, self.height))
+        
+        print(f'File opened: {out.isOpened()}')
+
+        for frame in frames:
+            # We'll convert the np array to hex BGR format
+            # \0xBBGGRR
+            frame = np.array(frame).astype(np.uint8)
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            out.write(frame)
+
+        out.release()
+        cv2.destroyAllWindows()
+
+        print('File closed')
+
+    
+    def scale_up(self, factor: int = 2):
+        self.data = scale_up(self.data, factor)
+
+    def binary2rgb(self):
+        '''If the data is binary, converts it to RGB format'''
+        self.data = binary2rgb(self.data)
 
 
 def test_rgb():

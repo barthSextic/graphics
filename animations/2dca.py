@@ -19,13 +19,15 @@ class SEED(Enum):
 
 class CA2D:
 
-    def __init__(self, width: int = 512, height: int = 512):
+    def __init__(self, width: int = 16, height: int = 16):
         self.width = width
         self.height = height
         self.data = glib.kinggraph(width, height)
 
         self.S = [2, 3]
         self.B = [3]
+
+        self.init_seed()
 
     def init_seed(self, seed: SEED = SEED.RANDOM):
         '''Initializes the seed for the 2D Cellular Automata'''
@@ -87,6 +89,19 @@ class CA2D:
         return frame
     
 
+    def run(self, iterations: int = 30) -> list:
+        '''Runs the 2D Cellular Automata for a given number of iterations
+        Returns a list of frames'''
+
+        frames = []
+        for _ in range(iterations):
+            print(f'Iteration {_ + 1} / {iterations}')
+            frames.append(self.frame())
+            self.update()
+
+        return frames
+    
+
 
 def test():
     ca = CA2D(5, 5)
@@ -104,19 +119,11 @@ def test():
 
 def main():
     ca = CA2D(25, 25)
-    ca.init_seed(SEED.RANDOM)
-    ca.set_survival([2, 3])
-    ca.set_birth([3, 6])
+    frames = ca.run(100)
 
-    frames = []
-    for f in range(ITERATIONS):
-        print(f'Frame {f + 1} / {ITERATIONS}')
-        frames.append(ca.frame())
-        ca.update()
-
-    frames = mp4.scale_up(frames, 20)
+    frames = mp4.scale_up(frames, 25)
     frames = mp4.binary2rgb(frames)
-    video = mp4.mp4('highlife.mp4', frames, FRAME_RATE)
+    video = mp4.mp4('life.mp4', frames, FRAME_RATE)
     video.make()
     
 
